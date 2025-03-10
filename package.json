@@ -23,16 +23,17 @@
     "@nestjs/common": "^10.0.0",
     "@nestjs/config": "^4.0.1",
     "@nestjs/core": "^10.0.0",
+    "@nestjs/jwt": "^11.0.0",
     "@nestjs/platform-express": "^10.0.0",
-    "@nestjs/sequelize": "^11.0.0",
+    "@nestjs/typeorm": "^11.0.0",
     "@types/bcrypt": "^5.0.2",
     "bcrypt": "^5.1.1",
     "dotenv": "^16.4.7",
+    "globals": "^16.0.0",
     "mysql2": "^3.13.0",
     "reflect-metadata": "^0.2.0",
     "rxjs": "^7.8.1",
-    "sequelize": "^6.37.6",
-    "sequelize-typescript": "^2.1.6"
+    "typeorm": "^0.3.21"
   },
   "devDependencies": {
     "@nestjs/cli": "^10.0.0",
