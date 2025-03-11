@@ -16,6 +16,7 @@ import { ConfigModule } from '@nestjs/config';
             password: process.env.DB_PASSWORD,
             database: process.env.DB_DATABASE,
             entities: [__dirname + '/**/*.entity{.ts,.js}'],
+            charset: "utf8mb4",
             synchronize: true,      // 保持与之前相同的同步行为
         }),
         UserModule

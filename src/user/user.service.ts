@@ -1,35 +1,31 @@
-import { Injectable, NotFoundException } from "@nestjs/common";
+import { ConflictException, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
 import { UserEntity } from './entity/user.entity'
+import { RegisterDto } from './dto/register.dto'
+import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class UserService {
     constructor(@InjectRepository(UserEntity) private userRepository: Repository<UserEntity>) {}
 
-    async findAll(): Promise<UserEntity[]> {
-        return this.userRepository.find();
-    }
+    async register(registerDto: RegisterDto): Promise<UserEntity> {
+        const existingUser = await this.userRepository.findOne({
+            where: { email: registerDto.email.toLowerCase() },
+        })
 
-    async findOne(id: number): Promise<UserEntity> {
-        const user = await this.userRepository.findOneBy({ id })
-        if (!user) {
-            throw new NotFoundException(`User with id ${id} not found`);
+        if (existingUser) {
+            throw new ConflictException("User already exists");
         }
-        return user;
-    }
 
-    async create(user: UserEntity): Promise<UserEntity> {
-        const newUser = this.userRepository.create(user);
-        return this.userRepository.save(newUser);
-    }
+        const hashedPassword = await bcrypt.hash(registerDto.password, 10);
 
-    async update(id: number, user: UserEntity): Promise<UserEntity> {
-        await this.userRepository.update(id, user);
-        return this.findOne(id);
-    }
+        const newUser = this.userRepository.create({
+            name: registerDto.name,
+            email: registerDto.email.toLowerCase(),
+            password: hashedPassword,
+        })
 
-    async remove(id: number): Promise<void> {
-        await this.userRepository.delete(id);
+        return this.userRepository.save(newUser)
     }
 }
