@@ -9,4 +9,6 @@ export class RegisterDto {
 
   @Length(6, 20)
   password: string; // 校园系统密码
+
+  username: string;
 }
