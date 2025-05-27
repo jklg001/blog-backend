@@ -14,12 +14,12 @@ import { RegisterDto } from './dto/register.dto';
 
 @Injectable()
 export class UserService {
-  constructor(
-    @InjectRepository(User)
+    constructor(
+        @InjectRepository(User)
     private readonly userRepository: Repository<User>,
-  ) {}
+    ) {}
 
-  async register(registerDto: RegisterDto) {
+    async register(registerDto: RegisterDto) {
     // 检查邮箱是否已存在
     const existingUser = await this.userRepository.findOne({
       where: { email: registerDto.email },
@@ -33,16 +33,16 @@ export class UserService {
     const saltRounds = 10;
     const hashedPassword = await bcrypt.hash(registerDto.password, saltRounds);
 
-    // 创建用户实例
-    const user = this.userRepository.create({
-      username: registerDto.username,
-      email: registerDto.email,
+        // 创建用户实例
+        const user = this.userRepository.create({
+            username: registerDto.username,
+            email: registerDto.email,
       password: hashedPassword,
-      role: 'user',
+            role: 'user',
       status: 'active',
-    });
+        });
 
-    // 保存到数据库
-    return this.userRepository.save(user);
-  }
+        // 保存到数据库
+        return this.userRepository.save(user);
+    }
 }
