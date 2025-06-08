@@ -4,11 +4,14 @@ import { ArticleController } from './article.controller';
 import { ArticleService } from './article.service';
 import { Article } from './entity/article.entity';
 import { User } from '../user/entity/user.entity';
+import { APP_INTERCEPTOR, APP_FILTER } from '@nestjs/core';
+import { TransformInterceptor } from '../core/response/interceptors/transform.interceptor';
+import { HttpExceptionFilter } from '../core/response/exceptions/http-exception.filter';
+import { CoreModule } from '../core/core.module';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Article, User])],
+  imports: [TypeOrmModule.forFeature([Article, User]), CoreModule], // 仅保留CoreModule导入
   controllers: [ArticleController],
   providers: [ArticleService],
-  exports: [ArticleService],
 })
 export class ArticleModule {}
