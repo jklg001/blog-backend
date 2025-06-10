@@ -8,13 +8,20 @@ import { LoginDto } from './dto/login.dto';
 import { JwtPayload } from './strategies/jwt.strategy';
 
 export interface LoginResponse {
-  accessToken: string;
+  access_token: string;
   user: {
     id: number;
     username: string;
     email: string;
+    nickname: string;
     role: string;
   };
+  expires_in: number;
+}
+
+export interface RefreshTokenResponse {
+  access_token: string;
+  expires_in: number;
 }
 
 @Injectable()
@@ -62,13 +69,66 @@ export class AuthService {
     const accessToken = this.jwtService.sign(payload);
 
     return {
-      accessToken,
+      access_token: accessToken,
       user: {
         id: user.id,
         username: user.username,
         email: user.email,
+        nickname: user.nickname,
         role: user.role,
       },
+      expires_in: 3600, // 1小时过期
+    };
+  }
+
+  async logout(userId: number): Promise<{ message: string }> {
+    // 在实际项目中，这里应该：
+    // 1. 将token加入黑名单
+    // 2. 或者更新用户的token版本号
+    // 3. 或者清除Redis中的token缓存
+    
+    // 为了简化，这里只返回成功消息
+    // 实际的token失效应该在JWT middleware中处理
+    
+    const user = await this.userRepository.findOne({
+      where: { id: userId },
+    });
+
+    if (!user) {
+      throw new UnauthorizedException('用户不存在');
+    }
+
+    return {
+      message: '登出成功',
+    };
+  }
+
+  async refreshToken(userId: number): Promise<RefreshTokenResponse> {
+    const user = await this.userRepository.findOne({
+      where: { id: userId },
+    });
+
+    if (!user) {
+      throw new UnauthorizedException('用户不存在');
+    }
+
+    // 检查用户状态
+    if (user.status !== 'active') {
+      throw new UnauthorizedException('账户已被禁用');
+    }
+
+    // 生成新的JWT token
+    const payload: JwtPayload = {
+      userId: user.id,
+      username: user.username,
+      email: user.email,
+    };
+
+    const accessToken = this.jwtService.sign(payload);
+
+    return {
+      access_token: accessToken,
+      expires_in: 3600, // 1小时过期
     };
   }
 
@@ -82,5 +142,11 @@ export class AuthService {
     } catch (error) {
       return null;
     }
+  }
+
+  async validateUser(userId: number): Promise<User | null> {
+    return this.userRepository.findOne({
+      where: { id: userId, status: 'active' },
+    });
   }
 }

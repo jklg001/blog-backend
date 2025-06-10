@@ -4,9 +4,6 @@ import { ArticleController } from './article.controller';
 import { ArticleService } from './article.service';
 import { Article } from './entity/article.entity';
 import { User } from '../user/entity/user.entity';
-import { APP_INTERCEPTOR, APP_FILTER } from '@nestjs/core';
-import { TransformInterceptor } from '../core/response/interceptors/transform.interceptor';
-import { HttpExceptionFilter } from '../core/response/exceptions/http-exception.filter';
 import { CoreModule } from '../core/core.module';
 
 @Module({
