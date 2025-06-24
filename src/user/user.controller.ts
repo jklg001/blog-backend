@@ -8,6 +8,7 @@ import {
   UseGuards,
   HttpCode,
   HttpStatus,
+  ParseIntPipe,
 } from '@nestjs/common';
 import { UserService } from './user.service';
 import { RegisterDto } from './dto/register.dto';
@@ -151,7 +152,9 @@ export class UserController {
     status: 404,
     description: '用户不存在',
   })
-  async findOne(@Param('id') id: string): Promise<UserResponseDto> {
-    return this.userService.findOne(+id);
+  async findOne(
+    @Param('id', ParseIntPipe) id: number,
+  ): Promise<UserResponseDto> {
+    return this.userService.findOne(id);
   }
 }

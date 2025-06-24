@@ -10,6 +10,7 @@ import {
   HttpStatus,
   HttpCode,
   UseGuards,
+  ParseIntPipe,
 } from '@nestjs/common';
 import { ArticleService } from './article.service';
 import { CreateArticleDto } from './dto/create-article.dto';
@@ -172,8 +173,8 @@ export class ArticleController {
     status: 404,
     description: '文章不存在',
   })
-  async findOne(@Param('id') id: string): Promise<ArticleDetailResponseDto> {
-    return await this.articleService.findOne(+id);
+  async findOne(@Param('id', ParseIntPipe) id: number): Promise<ArticleDetailResponseDto> {
+    return await this.articleService.findOne(id);
   }
 
   @Patch(':id')
@@ -210,11 +211,11 @@ export class ArticleController {
     description: '文章不存在',
   })
   async update(
-    @Param('id') id: string,
+    @Param('id', ParseIntPipe) id: number,
     @Body() updateArticleDto: UpdateArticleDto,
     @CurrentUser() user: User,
   ): Promise<ArticleResponseDto> {
-    return await this.articleService.update(+id, updateArticleDto, user.id);
+    return await this.articleService.update(id, updateArticleDto, user.id);
   }
 
   @Delete(':id')
@@ -247,10 +248,10 @@ export class ArticleController {
     description: '文章不存在',
   })
   async remove(
-    @Param('id') id: string,
+    @Param('id', ParseIntPipe) id: number,
     @CurrentUser() user: User,
   ): Promise<void> {
-    await this.articleService.remove(+id, user.id);
+    await this.articleService.remove(id, user.id);
   }
 
   @Patch(':id/publish')
@@ -288,10 +289,10 @@ export class ArticleController {
     description: '文章已经是发布状态',
   })
   async publishArticle(
-    @Param('id') id: string,
+    @Param('id', ParseIntPipe) id: number,
     @CurrentUser() user: User,
   ): Promise<ArticleResponseDto> {
-    return await this.articleService.publishArticle(+id, user.id);
+    return await this.articleService.publishArticle(id, user.id);
   }
 
   @Post(':id/like')
@@ -327,10 +328,10 @@ export class ArticleController {
     description: '文章不存在',
   })
   async toggleLike(
-    @Param('id') id: string,
+    @Param('id', ParseIntPipe) id: number,
     @CurrentUser() user: User,
   ) {
-    return await this.articleService.toggleLike(+id, user.id);
+    return await this.articleService.toggleLike(id, user.id);
   }
 
   @Post(':id/save')
@@ -366,10 +367,10 @@ export class ArticleController {
     description: '文章不存在',
   })
   async toggleSave(
-    @Param('id') id: string,
+    @Param('id', ParseIntPipe) id: number,
     @CurrentUser() user: User,
   ) {
-    return await this.articleService.toggleSave(+id, user.id);
+    return await this.articleService.toggleSave(id, user.id);
   }
 
   @Get('user/:userId')
@@ -408,11 +409,11 @@ export class ArticleController {
     description: '用户不存在',
   })
   async findByUser(
-    @Param('userId') userId: string,
+    @Param('userId', ParseIntPipe) userId: number,
     @Query('page') page?: number,
     @Query('limit') limit?: number,
   ): Promise<ArticleListResponseDto> {
-    return await this.articleService.findByUser(+userId, {
+    return await this.articleService.findByUser(userId, {
       page: page || 1,
       limit: Math.min(limit || 10, 100),
     });
