@@ -1,0 +1,36 @@
+---
+description: 
+globs: 
+alwaysApply: false
+---
+# 博客后端项目结构指南
+
+## 项目概述
+这是一个基于 NestJS 的博客后端应用，使用 TypeScript 开发，集成了用户认证、文章管理等核心功能。
+
+## 主要入口点
+- 应用入口：[main.ts](mdc:src/main.ts)
+- 应用模块：[app.module.ts](mdc:src/app.module.ts)
+- 包配置：[package.json](mdc:package.json)
+
+## 核心模块结构
+```
+src/
+├── article/          # 文章管理模块
+├── auth/            # 用户认证模块
+├── user/            # 用户管理模块
+├── core/            # 核心功能模块
+├── common/          # 通用组件模块
+└── health/          # 健康检查模块
+```
+
+## 开发工具配置
+- TypeScript 配置：[tsconfig.json](mdc:tsconfig.json)
+- ESLint 配置：[.eslintrc.js](mdc:.eslintrc.js)
+- Prettier 配置：[.prettierrc](mdc:.prettierrc)
+- NestJS 配置：[nest-cli.json](mdc:nest-cli.json)
+
+## 项目启动命令
+- 开发模式：`yarn start:dev`
+- 生产模式：`yarn start:prod`
+- 测试运行：`yarn test`

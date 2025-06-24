@@ -1,0 +1,139 @@
+# 博客系统 API 测试文件
+# 使用方法：在 VS Code 中安装 REST Client 插件，然后可以直接执行请求
+
+# 设置基础URL
+@baseUrl = http://localhost:3002
+@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjMsInVzZXJuYW1lIjoiemhhbmdzYW4yMDI0IiwiZW1haWwiOiJ6aGFuZ3NhbkB1bml2ZXJzaXR5LmVkdS5jbiIsImlhdCI6MTc1MDQwODI3NiwiZXhwIjoxNzUwNDk0Njc2fQ.IzTDaIbfzbVlqasZ4zWV7yP_S1dGJuW9Ify20ZeV2nQ
+
+### 用户注册
+POST {{baseUrl}}/auth/register
+Content-Type: application/json
+
+{
+  "email": "test@example.com",
+  "username": "testuser",
+  "password": "password123",
+  "nickname": "测试用户"
+}
+
+### 用户登录 (请先复制获取的token到上面的变量中)
+POST {{baseUrl}}/auth/login
+Content-Type: application/json
+
+{
+  "email": "test@example.com",
+  "password": "password123"
+}
+
+### 获取用户信息
+GET {{baseUrl}}/auth/profile
+Authorization: Bearer {{token}}
+
+### 创建文章
+POST {{baseUrl}}/articles
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "title": "测试文章标题",
+  "content": "# 测试文章\n\n这是一篇测试文章的内容，用于测试评论功能。\n\n## 文章特点\n\n- 支持Markdown格式\n- 可以添加评论\n- 支持多层级回复",
+  "summary": "这是一篇用于测试评论功能的文章",
+  "status": "published"
+}
+
+### 获取文章列表
+GET {{baseUrl}}/articles?page=1&limit=10&status=published
+
+### 获取文章详情 (请替换为实际的文章ID)
+GET {{baseUrl}}/articles/1
+
+### ========== 评论功能测试 ==========
+
+### 创建评论
+POST {{baseUrl}}/comments
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "content": "这是第一条评论！这篇文章写得很棒！",
+  "articleId": 1
+}
+
+### 回复评论 (请替换为实际的父评论ID)
+POST {{baseUrl}}/comments
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "content": "我同意你的观点，这确实是一篇很棒的文章！",
+  "articleId": 1,
+  "parentId": 1
+}
+
+### 获取文章评论列表
+GET {{baseUrl}}/comments/article/12?page=1&limit=20&sortBy=createdAt&sortOrder=DESC
+
+### 获取评论回复列表
+GET {{baseUrl}}/comments/1/replies?page=1&limit=10
+
+### 获取用户评论列表
+GET {{baseUrl}}/comments/user/1?page=1&limit=20
+
+### 获取评论详情
+GET {{baseUrl}}/comments/1
+
+### 更新评论 (只能在发布后5分钟内修改)
+PUT {{baseUrl}}/comments/1
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "content": "这是修改后的评论内容"
+}
+
+### 点赞评论
+POST {{baseUrl}}/comments/1/like
+Authorization: Bearer {{token}}
+
+### 取消点赞评论
+DELETE {{baseUrl}}/comments/1/like
+Authorization: Bearer {{token}}
+
+### 删除评论
+DELETE {{baseUrl}}/comments/1
+Authorization: Bearer {{token}}
+
+### ========== 错误测试 ==========
+
+### 测试未授权访问
+POST {{baseUrl}}/comments
+Content-Type: application/json
+
+{
+  "content": "这应该会返回401错误",
+  "articleId": 1
+}
+
+### 测试不存在的文章
+POST {{baseUrl}}/comments
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "content": "评论不存在的文章",
+  "articleId": 99999
+}
+
+### 测试参数验证错误
+POST {{baseUrl}}/comments
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "content": "",
+  "articleId": "invalid"
+}
+
+### 测试权限错误 (尝试删除其他用户的评论)
+DELETE {{baseUrl}}/comments/999
+Authorization: Bearer {{token}}

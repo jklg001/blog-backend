@@ -1,0 +1,40 @@
+---
+description: 
+globs: 
+alwaysApply: false
+---
+# 认证和授权系统
+
+## 认证模块
+认证功能集中在 `src/auth/` 模块中：
+- 控制器：[auth.controller.ts](mdc:src/auth/auth.controller.ts)
+- 服务：[auth.service.ts](mdc:src/auth/auth.service.ts)
+- 模块：[auth.module.ts](mdc:src/auth/auth.module.ts)
+
+## JWT 认证策略
+- 使用 Passport 和 JWT 策略
+- JWT 策略配置位于 `src/auth/strategies/` 目录
+- 使用 bcrypt 进行密码哈希处理
+
+## 守卫 (Guards)
+### 认证守卫
+- JWT 认证守卫位于 `src/auth/guards/` 目录
+- 用于保护需要登录的端点
+
+### 用户守卫
+- 用户相关守卫位于 `src/user/guards/` 目录
+- 可能包含权限验证和资源访问控制
+
+## 装饰器
+- 自定义装饰器位于 `src/auth/decorators/` 目录
+- 用于简化认证信息的获取和权限检查
+
+## DTO 验证
+- 认证相关 DTO 位于 `src/auth/dto/` 目录
+- 包含登录、注册等请求数据验证
+
+## 安全最佳实践
+- 密码加密存储
+- JWT Token 过期时间设置
+- 敏感信息不在响应中返回
+- 使用环境变量管理密钥

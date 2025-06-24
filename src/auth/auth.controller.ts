@@ -142,7 +142,8 @@ export class AuthController {
     description: '未认证',
   })
   async getCurrentUser(@CurrentUser() user: User) {
-    return user;
+    const { password, ...userWithoutPassword } = user;
+    return userWithoutPassword;
   }
 
   @Post('refresh')

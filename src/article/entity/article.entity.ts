@@ -5,6 +5,7 @@ import {
   CreateDateColumn,
   UpdateDateColumn,
   ManyToOne,
+  OneToMany,
   JoinColumn,
 } from 'typeorm';
 import { User } from '../../user/entity/user.entity';
@@ -78,4 +79,8 @@ export class Article {
 
   @Column({ type: 'json', nullable: true, comment: '标签ID数组' })
   tagIds: number[] | null;
+
+  // 关联关系
+  @OneToMany('Comment', 'article')
+  comments: any[];
 }

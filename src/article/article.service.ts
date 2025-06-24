@@ -30,6 +30,7 @@ interface FindByUserQuery {
   page?: number;
   limit?: number;
   status?: string;
+  search?: string;
 }
 
 @Injectable()
@@ -289,11 +290,42 @@ export class ArticleService {
     };
   }
 
+  async publishArticle(
+    id: number,
+    userId: number,
+  ): Promise<ArticleResponseDto> {
+    const article = await this.articleRepository.findOne({
+      where: { id, isDeleted: false },
+      relations: ['author'],
+    });
+
+    if (!article) {
+      throw new NotFoundException('文章不存在');
+    }
+
+    // 检查权限：只有作者可以发布
+    if (article.authorId !== userId) {
+      throw new ForbiddenException('只能发布自己的文章');
+    }
+
+    // 检查文章状态
+    if (article.status === ArticleStatus.PUBLISHED) {
+      throw new BadRequestException('文章已经是发布状态');
+    }
+
+    // 更新状态为已发布
+    article.status = ArticleStatus.PUBLISHED;
+    article.publishedAt = new Date();
+
+    const savedArticle = await this.articleRepository.save(article);
+    return this.transformToResponseDto(savedArticle);
+  }
+
   async findByUser(
     userId: number,
     query: FindByUserQuery = {},
   ): Promise<ArticleListResponseDto> {
-    const { page = 1, limit = 10, status } = query;
+    const { page = 1, limit = 10, status, search } = query;
 
     // 验证用户是否存在
     const user = await this.userRepository.findOne({ where: { id: userId } });
@@ -310,6 +342,11 @@ export class ArticleService {
     // 状态筛选
     if (status) {
       queryBuilder.andWhere('article.status = :status', { status });
+    }
+
+    // 标题搜索
+    if (search) {
+      queryBuilder.andWhere('article.title LIKE :search', { search: `%${search}%` });
     }
 
     // 排序

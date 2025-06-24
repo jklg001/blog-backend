@@ -1,0 +1,37 @@
+---
+description: 
+globs: 
+alwaysApply: false
+---
+# API 开发指南
+
+## 控制器开发模式
+遵循 NestJS 的控制器模式，每个功能模块包含：
+- Controller：处理 HTTP 请求
+- Service：业务逻辑处理
+- Module：模块配置和依赖注入
+
+### 文章模块示例
+- 控制器：[article.controller.ts](mdc:src/article/article.controller.ts)
+- 服务：[article.service.ts](mdc:src/article/article.service.ts)
+- 模块：[article.module.ts](mdc:src/article/article.module.ts)
+
+### 用户模块示例
+- 控制器：[user.controller.ts](mdc:src/user/user.controller.ts)
+- 服务：[user.service.ts](mdc:src/user/user.service.ts)
+- 模块：[user.module.ts](mdc:src/user/user.module.ts)
+
+## DTO 和验证
+- 使用 class-validator 进行数据验证
+- DTO 文件位于各模块的 `dto/` 目录下
+- 输入数据验证和类型安全
+
+## API 文档
+- 集成 Swagger 用于 API 文档生成
+- 使用装饰器标注 API 端点和参数
+- 开发时访问 `/api` 查看文档
+
+## 错误处理
+- 使用 NestJS 内置异常过滤器
+- 统一错误响应格式
+- 适当的 HTTP 状态码返回

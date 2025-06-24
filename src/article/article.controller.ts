@@ -32,6 +32,7 @@ import {
   ApiQuery,
   ApiBody,
 } from '@nestjs/swagger';
+import { ArticleStatus } from './entity/article.entity';
 
 @ApiTags('博客文章')
 @Controller('api/articles')
@@ -252,6 +253,47 @@ export class ArticleController {
     await this.articleService.remove(+id, user.id);
   }
 
+  @Patch(':id/publish')
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({
+    summary: '发布文章',
+    description: '将草稿状态的文章发布，只有作者本人可以操作',
+  })
+  @ApiBearerAuth('jwt')
+  @ApiParam({
+    name: 'id',
+    description: '文章ID',
+    type: 'number',
+    example: 1,
+  })
+  @ApiResponse({
+    status: 200,
+    description: '发布成功',
+    type: ArticleResponseDto,
+  })
+  @ApiResponse({
+    status: 401,
+    description: '未认证',
+  })
+  @ApiResponse({
+    status: 403,
+    description: '无权限，只能发布自己的文章',
+  })
+  @ApiResponse({
+    status: 404,
+    description: '文章不存在',
+  })
+  @ApiResponse({
+    status: 400,
+    description: '文章已经是发布状态',
+  })
+  async publishArticle(
+    @Param('id') id: string,
+    @CurrentUser() user: User,
+  ): Promise<ArticleResponseDto> {
+    return await this.articleService.publishArticle(+id, user.id);
+  }
+
   @Post(':id/like')
   @HttpCode(HttpStatus.OK)
   @ApiOperation({
@@ -373,6 +415,63 @@ export class ArticleController {
     return await this.articleService.findByUser(+userId, {
       page: page || 1,
       limit: Math.min(limit || 10, 100),
+    });
+  }
+
+  @Get('my/articles')
+  @ApiOperation({
+    summary: '获取我的文章列表',
+    description: '获取当前用户的所有文章列表，用于后台管理',
+  })
+  @ApiBearerAuth('jwt')
+  @ApiQuery({
+    name: 'page',
+    description: '页码',
+    required: false,
+    type: Number,
+    example: 1,
+  })
+  @ApiQuery({
+    name: 'limit',
+    description: '每页数量',
+    required: false,
+    type: Number,
+    example: 10,
+  })
+  @ApiQuery({
+    name: 'status',
+    description: '文章状态筛选',
+    required: false,
+    enum: ArticleStatus,
+    example: ArticleStatus.PUBLISHED,
+  })
+  @ApiQuery({
+    name: 'search',
+    description: '搜索关键词，模糊匹配标题',
+    required: false,
+    type: String,
+  })
+  @ApiResponse({
+    status: 200,
+    description: '获取成功',
+    type: ArticleListResponseDto,
+  })
+  @ApiResponse({
+    status: 401,
+    description: '未认证',
+  })
+  async getMyArticles(
+    @CurrentUser() user: User,
+    @Query('page') page?: number,
+    @Query('limit') limit?: number,
+    @Query('status') status?: ArticleStatus,
+    @Query('search') search?: string,
+  ): Promise<ArticleListResponseDto> {
+    return await this.articleService.findByUser(user.id, {
+      page: page || 1,
+      limit: Math.min(limit || 10, 100),
+      status,
+      search,
     });
   }
 

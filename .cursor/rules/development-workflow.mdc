@@ -1,0 +1,45 @@
+---
+description: 
+globs: 
+alwaysApply: false
+---
+# 开发工作流程
+
+## 代码规范
+- 使用 ESLint 进行代码检查：[.eslintrc.js](mdc:.eslintrc.js)
+- 使用 Prettier 进行代码格式化：[.prettierrc](mdc:.prettierrc)
+- 运行 `yarn lint` 检查代码规范
+- 运行 `yarn format` 格式化代码
+
+## 测试策略
+### 单元测试
+- 测试文件以 `.spec.ts` 结尾
+- 使用 Jest 测试框架
+- 运行 `yarn test` 执行单元测试
+
+### 端到端测试
+- E2E 测试配置位于 `test/` 目录
+- 运行 `yarn test:e2e` 执行端到端测试
+
+### 测试覆盖率
+- 运行 `yarn test:cov` 生成覆盖率报告
+
+## 环境配置
+- 使用 dotenv 管理环境变量
+- 开发环境配置文件 `.env`
+- 生产环境变量单独配置
+
+## 构建和部署
+- 运行 `yarn build` 编译 TypeScript
+- 构建输出位于 `dist/` 目录
+- 生产环境使用 `yarn start:prod` 启动
+
+## 调试设置
+- 支持 VS Code 调试配置
+- 使用 `yarn start:debug` 启动调试模式
+- 断点调试和变量检查
+
+## Git 工作流
+- 遵循 Git Flow 或 GitHub Flow
+- 提交前运行代码检查和测试
+- 使用有意义的提交信息
